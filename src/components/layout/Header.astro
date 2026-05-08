@@ -398,7 +398,7 @@ const buttonId = `${menuId}-button`;
               <div class="border-border mt-3 border-t pt-3">
                 <div class="flex items-center justify-between px-1">
                   <span class="text-sm text-foreground-muted">Theme mode</span>
-                  <ThemeModeDropdown />
+                  <ThemeModeDropdown class="hdr-mode-mobile" />
                 </div>
               </div>
             )}
@@ -708,6 +708,13 @@ const buttonId = `${menuId}-button`;
     opacity: 0.3;
     filter: blur(4px);
     transition: opacity 200ms, filter 200ms;
+  }
+
+  .hdr-mode-mobile .ttg-trigger {
+    color: var(--color-brand-700);
+  }
+  .dark .hdr-mode-mobile .ttg-trigger {
+    color: var(--color-foreground);
   }
 
   [data-header-shape="floating"] {
