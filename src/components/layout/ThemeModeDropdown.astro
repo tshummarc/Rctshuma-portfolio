@@ -207,12 +207,18 @@ const { class: className } = Astro.props;
   const STORAGE_KEY = 'theme';
   const VALID_MODES: readonly Mode[] = ['system', 'light', 'dark'] as const;
 
+  function readDefaultMode(): Mode {
+    const fromAttr = document.documentElement.getAttribute('data-default-color-mode');
+    if (fromAttr === 'system' || fromAttr === 'light' || fromAttr === 'dark') return fromAttr;
+    return 'system';
+  }
+
   function readMode(): Mode {
     try {
       const v = localStorage.getItem(STORAGE_KEY);
       if (v === 'system' || v === 'light' || v === 'dark') return v;
     } catch { /* private mode */ }
-    return 'system';
+    return readDefaultMode();
   }
 
   function osIsDark(): boolean {

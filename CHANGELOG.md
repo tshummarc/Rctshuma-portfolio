@@ -6,6 +6,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.5.0] — 2026-05-19
+
+### Added
+
+- **`defaultColorMode` config option** — new optional `defaultColorMode?: 'system' | 'light' | 'dark'` setting in `src/config/site.config.ts` controls which colour mode a brand-new visitor lands in (i.e. before they have a saved preference in `localStorage`). Defaults to `'system'`, which matches existing behaviour exactly. The setting only affects first-time visitors; returning visitors keep the preference they chose via the header dropdown.
+- **`data-default-color-mode` SSR-injected attribute** on `<html>` — single source of truth read by both the inline theme bootstrap in `BaseLayout.astro` and the `ThemeModeDropdown` component. The initial `<html class>` is also rendered from the same setting (`'light'` ships without the `dark` class; `'dark'` and `'system'` ship with it), so the very first byte of HTML matches the configured default and the page is flash-proof from the first paint in every scenario.
+
+### Changed
+
+- **`colour-mode-system.mdx` blog post rewritten** to document the new `defaultColorMode` setting, the SSR-injected `data-default-color-mode` attribute, and the recommendation to keep `'system'` as the default unless you have a deliberate brand reason. The state-contract section now lists four pieces of state instead of three, and the bootstrap code sample shows the new `getDefaultMode()` helper.
+
+### Upgrade notes
+
+`defaultColorMode` is optional and defaults to `'system'` — existing sites pick up the new setting with no behaviour change. To opt in, set `defaultColorMode: 'light'` or `defaultColorMode: 'dark'` in `site.config.ts`. The header dropdown continues to show all three options regardless of the default, so visitors can always override.
+
+No Lighthouse regression: the bootstrap script is unchanged in shape (still `is:inline` in `<head>`, runs synchronously before paint), and the only addition is reading one extra DOM attribute. No new JavaScript ships, no new components, no new network requests.
+
+---
+
 ## [1.4.0] — 2026-05-19
 
 ### Added

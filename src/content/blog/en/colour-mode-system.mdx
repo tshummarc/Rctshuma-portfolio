@@ -1,7 +1,7 @@
 ---
 title: "System, Light, Dark — How Astro Rocket's Colour-Mode System Works"
-description: "A 3-state colour-mode system with no flash, live OS-preference tracking, and a pill dropdown that respects what the user actually picked. Here is how it is built."
-publishedAt: 2026-05-06
+description: "A 3-state colour-mode system with no flash, live OS-preference tracking, a configurable first-visit default, and a pill dropdown that respects what the user actually picked. Here is how it is built."
+publishedAt: 2026-05-19
 author: "Hans Martens"
 tags: ["astro-rocket", "dark-mode", "design-system", "ux", "tutorial"]
 featured: false
@@ -11,21 +11,26 @@ svgSlug: "colour-mode-system"
 imageAlt: "Sun-and-moon icon above the words 'colour mode' on a dark background"
 ---
 
-Most sites get dark mode subtly wrong. Either they treat it as a binary toggle and forget the OS exists, or they respect the OS and forget the user might want to override it. The fix is small but the implementation is full of edge cases — flashes on first paint, stale state across view transitions, listeners that double-bind, OS flips that fail to propagate.
+Most sites get dark mode subtly wrong. Either they treat it as a binary toggle and forget the OS exists, or they respect the OS and forget the user might want to override it. The fix is small but the implementation is full of edge cases — flashes on first paint, stale state across page navigations, listeners that double-bind, OS flips that fail to propagate.
 
-Astro Rocket ships a 3-state colour-mode system — **System / Light / Dark** — that resolves all of those. The user picks their preference, the page never flashes the wrong theme, and 'System' tracks the operating system live. This post walks through how it is built and how the header pill exposes it.
+Astro Rocket ships a 3-state colour-mode system — **System / Light / Dark** — that resolves all of those. The user picks their preference, the page never flashes the wrong theme, and 'System' tracks the operating system live. Since v1.5.0, theme authors can also pick which of the three modes a brand-new visitor lands in, without touching the bootstrap code. This post walks through how it is built, how the header pill exposes it, and how to configure the first-visit default for your own site.
 
 ## The state contract
 
-Three pieces of state, each with one job:
+Four pieces of state, each with one job:
 
 ```
-localStorage.theme           ∈ {'system','light','dark'}   ← user's choice
-<html data-theme-mode="…">   mirrors the saved mode        ← drives the trigger icon
-<html>.dark                  resolved appearance           ← what Tailwind keys off
+localStorage.theme                    ∈ {'system','light','dark'}   ← visitor's choice
+<html data-default-color-mode="…">    SSR-injected from site.config ← first-visit fallback
+<html data-theme-mode="…">            mirrors the saved mode        ← drives the trigger icon
+<html>.dark                           resolved appearance           ← what Tailwind keys off
 ```
 
-The keys are intentional. `localStorage` (not `sessionStorage`) means the choice survives reloads and new tabs. `data-theme-mode` is separate from the resolved `.dark` class because the trigger icon needs to know *what the user picked* — a sun for 'light', a moon for 'dark', a monitor for 'system' — even when the resolved appearance under 'system' happens to be dark. Conflating the two would mean the System icon disappears the moment the OS is dark.
+The keys are intentional:
+
+- **`localStorage`** (not `sessionStorage`) means the visitor's choice survives reloads and new tabs.
+- **`data-default-color-mode`** is rendered server-side from `siteConfig.defaultColorMode`. It exists so both the inline bootstrap and the dropdown component read the same fallback value — single source of truth, no duplication.
+- **`data-theme-mode`** is separate from the resolved `.dark` class because the trigger icon needs to know *what the user picked* — a sun for 'light', a moon for 'dark', a monitor for 'system' — even when the resolved appearance under 'system' happens to be dark. Conflating the two would mean the System icon disappears the moment the OS is dark.
 
 Resolving the appearance is a one-liner:
 
@@ -38,6 +43,37 @@ document.documentElement.classList.toggle('dark', isDark);
 
 That's the entire decision tree. 'System' delegates to the OS, the other two override it.
 
+## Configuring the first-visit default
+
+The new knob lives in `src/config/site.config.ts`:
+
+```ts
+const siteConfig: SiteConfig = {
+  // …
+  defaultColorMode: 'system',  // 'system' | 'light' | 'dark'
+  // …
+};
+```
+
+What it controls — and what it does not:
+
+- **What it controls.** The mode a visitor lands in when they have nothing saved yet (first visit, or after clearing browser storage). That's the only state the setting touches.
+- **What it does *not* control.** Returning visitors. Once someone has clicked System / Light / Dark in the header pill, their choice is in `localStorage` and respected on every future visit. The default never re-asserts itself over a saved preference.
+
+Three values, three behaviours for first-time visitors:
+
+| Value      | First paint                                                  |
+|------------|--------------------------------------------------------------|
+| `'system'` | Follows the OS via `prefers-color-scheme`. **Recommended.**   |
+| `'light'`  | Light, regardless of OS.                                      |
+| `'dark'`   | Dark, regardless of OS.                                       |
+
+The dropdown always shows all three options, so visitors can override at any time.
+
+**Why 'system' is the recommended default.** The visitor's OS already represents their preference — they set their phone or laptop to light or dark themselves. Respecting that signal is the modern, polite default that Apple, Google, and Microsoft all recommend in their own design systems. Force-overriding the OS feels worse, not friendlier, even if the brand "looks better" in one mode. Use `'light'` or `'dark'` only if you have a deliberate brand reason (a press kit, a launch landing page, a site that simply doesn't have a dark theme yet).
+
+The setting is read at SSR and injected into the `<html>` tag, so it's flash-proof from the very first byte — covered in the next section.
+
 ## The no-flash bootstrap
 
 The hardest part of any theme system is not the toggle — it is making sure the right theme is on screen *before the first paint*. A `<script>` placed in `<head>` runs synchronously after the `<html>` tag is parsed but before the browser paints anything from `<body>`. That window is where the bootstrap lives:
@@ -47,12 +83,18 @@ The hardest part of any theme system is not the toggle — it is making sure the
   (function () {
     const VALID_MODES = ['system', 'light', 'dark'];
 
+    function getDefaultMode() {
+      const fromAttr = document.documentElement.getAttribute('data-default-color-mode');
+      if (VALID_MODES.indexOf(fromAttr) !== -1) return fromAttr;
+      return 'system';
+    }
+
     function getMode() {
       try {
         const stored = localStorage.getItem('theme');
         if (VALID_MODES.indexOf(stored) !== -1) return stored;
       } catch { /* private mode / disabled storage */ }
-      return 'system';
+      return getDefaultMode();
     }
 
     function applyMode(el) {
@@ -73,11 +115,6 @@ The hardest part of any theme system is not the toggle — it is making sure the
       mql.addEventListener('change', () => {
         if (getMode() === 'system') applyMode(document.documentElement);
       });
-
-      document.addEventListener('astro:before-swap', (e) =>
-        applyMode(e.newDocument.documentElement));
-      document.addEventListener('astro:after-swap', () =>
-        applyMode(document.documentElement));
     }
   })();
 </script>
@@ -87,11 +124,36 @@ A few details that matter:
 
 - **`is:inline`** stops Astro from bundling and deferring the script. It must be inline.
 - The **`try / catch`** is not paranoia — Safari in private mode throws on `localStorage.getItem`. Without the catch, the whole script crashes and the page renders bare.
-- The **`window.__themeListenersInit`** guard ensures media-query and view-transition listeners attach exactly once across page navigations. Without it, every navigation would stack another listener and you would eventually hit hundreds of duplicate callbacks per OS-theme flip.
-- The **media-query listener** is the live-update mechanism. When the OS flips between dark and light *while the user is on 'system'*, the page follows immediately. If the user is on 'light' or 'dark', the OS flip is ignored — that is the whole point of the override.
-- The **`astro:before-swap` / `after-swap`** handlers re-apply the theme across view transitions. Without them, a navigation that swaps the document head can momentarily show the SSR default before the bootstrap re-runs.
+- **`getDefaultMode()`** reads the SSR-injected attribute, so this script doesn't have to know about `site.config.ts` directly. The two stay decoupled.
+- The **`window.__themeListenersInit`** guard ensures the media-query listener attaches exactly once. Astro Rocket disables client-side view transitions, so each navigation is a full reload and the guard would normally not matter — but it's free insurance against anyone re-enabling them later.
+- The **media-query listener** is the live-update mechanism. When the OS flips between dark and light *while the visitor is on 'system'*, the page follows immediately. If the visitor is on 'light' or 'dark', the OS flip is ignored — that is the whole point of the override.
 
-The `<html>` tag carries seed defaults — `class="dark" data-theme-mode="system"` — so even visitors with JavaScript disabled satisfy the contract.
+Belt and braces — the `<html>` tag itself carries seed defaults rendered server-side:
+
+```astro
+const defaultColorMode = siteConfig.defaultColorMode ?? 'system';
+const initialHtmlClass = defaultColorMode === 'light'
+  ? 'scroll-smooth'
+  : 'scroll-smooth dark';
+
+<html
+  class={initialHtmlClass}
+  data-theme-mode={defaultColorMode}
+  data-default-color-mode={defaultColorMode}
+>
+```
+
+So the very first byte of HTML matches the configured default. For `'dark'` and `'system'` (the common cases) the page ships with `class="dark"`; for `'light'` it ships without. The inline bootstrap then either keeps the SSR-rendered state (new visitor) or flips it to match the saved choice (returning visitor) — in both cases, before paint.
+
+The combination is flash-proof in every scenario:
+
+| Visitor                                              | First paint                              |
+|------------------------------------------------------|------------------------------------------|
+| New, default=`'system'`, OS dark                     | dark                                     |
+| New, default=`'system'`, OS light                    | light                                    |
+| New, default=`'dark'` (any OS)                       | dark                                     |
+| New, default=`'light'` (any OS)                      | light                                    |
+| Returning, saved preference                          | their saved choice                       |
 
 ## The pill UI
 
@@ -113,7 +175,7 @@ html[data-theme-mode='dark']   .ttg-trigger .ttg-icon-dark {
 html:not([data-theme-mode]) .ttg-trigger .ttg-icon-system { display: block; }
 ```
 
-The fallback rule on the last line covers the brief moment before the bootstrap script runs — without it, a JS-disabled visitor would see an empty pill. With it, they see the System icon by default, which is the right fallback.
+The fallback rule on the last line covers the edge case where the attribute is somehow missing — without it, a JS-disabled visitor in that case would see an empty pill. With it, they see the System icon, which is a sensible fallback.
 
 The win here is that the icon is correct from the very first frame. There is no JavaScript branch that decides which SVG to render; the browser does it from the attribute the bootstrap already set before paint.
 
@@ -135,7 +197,7 @@ Under the System row sits a small sub-line:
 
 > **System** — *Currently dark*
 
-That tiny piece of text is the most user-friendly part of the whole component. When 'System' is just a label, users have no way to know what it currently resolves to without inspecting the page. The sub-line says it explicitly.
+That tiny piece of text is the most user-friendly part of the whole component. When 'System' is just a label, visitors have no way to know what it currently resolves to without inspecting the page. The sub-line says it explicitly.
 
 It updates live via the same media-query listener:
 
@@ -152,7 +214,7 @@ Open the dropdown, flip your OS theme from another window, and watch the sub-lin
 
 ## Two instances, one state
 
-The pill is rendered twice — once in the desktop header (hidden below the `md` breakpoint) and once inside the mobile menu (hidden above `md`). Both instances share state because every mutation walks the document, not the local component:
+The pill is rendered twice — once in the desktop header (visible at `lg` and up) and once inside the mobile menu (visible below `lg`). Both instances share state because every mutation walks the document, not the local component:
 
 ```js
 function syncAllRows(mode) {
@@ -164,10 +226,12 @@ function syncAllRows(mode) {
 
 Selecting Dark in the mobile menu instantly updates the desktop pill's `aria-checked` state — and the icon-swap CSS does the rest.
 
-The init function is idempotent — a `dataset.ttgInit` flag on each wrapper prevents double-binding when Astro re-runs the script on `astro:after-swap`. A separate `window.__ttgGlobalInit` flag does the same for the document-level listeners (outside-click, Escape, media-query). The result is that two component instances and any number of view transitions never accumulate duplicate handlers.
+The init function is idempotent — a `dataset.ttgInit` flag on each wrapper prevents double-binding when the script re-runs. A separate `window.__ttgGlobalInit` flag does the same for the document-level listeners (outside-click, Escape, media-query). The result is that two component instances never accumulate duplicate handlers.
 
-## What the user actually sees
+## What the visitor actually sees
 
-Open the site for the first time on a Mac in dark mode: the header pill shows the monitor icon, the page is dark. Open the dropdown: System is highlighted, with "Currently dark" beneath it. Pick Light: the page goes light, the icon turns into a sun, the choice is persisted to `localStorage`. Reload the tab: still light. Flip macOS to light mode: nothing changes — the user explicitly overrode. Pick System again: back to tracking the OS, sub-line says "Currently light".
+Open the site for the first time on a Mac in dark mode, with `defaultColorMode: 'system'`: the header pill shows the monitor icon, the page is dark. Open the dropdown: System is highlighted, with "Currently dark" beneath it. Pick Light: the page goes light, the icon turns into a sun, the choice is persisted to `localStorage`. Reload the tab: still light. Flip macOS to light mode: nothing changes — the visitor explicitly overrode. Pick System again: back to tracking the OS, sub-line now says "Currently light".
+
+Change `defaultColorMode` in `site.config.ts` from `'system'` to `'dark'`, rebuild, and open the site in an incognito window with a light-mode OS: the page is dark from the first paint. The dropdown still shows all three options; the visitor can still pick System to follow their OS, and that choice is remembered.
 
 Every state transition is one attribute change away from the next. No flashes, no double listeners, no cases where the icon and the resolved theme disagree. The contract is small enough to keep entirely in your head, which is why it works.

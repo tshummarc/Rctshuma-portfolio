@@ -88,6 +88,18 @@ export interface SiteConfig {
     };
   };
   /**
+   * Default colour mode for first-time visitors (no saved preference yet).
+   * - 'system' (default) — follow the visitor's OS preference. Recommended.
+   * - 'light'            — site opens in light mode regardless of OS.
+   * - 'dark'             — site opens in dark mode regardless of OS.
+   *
+   * Visitors can always override via the System / Light / Dark dropdown in
+   * the header; their choice is saved in localStorage and respected on
+   * every future visit. This setting only affects the very first paint
+   * for someone who has nothing saved yet.
+   */
+  defaultColorMode?: 'system' | 'light' | 'dark';
+  /**
    * Internationalization (i18n) — see `src/config/i18n.config.ts`.
    * Lives in a separate file so the i18n module can be imported by
    * unit tests without pulling in `astro:env/server`.
@@ -150,6 +162,7 @@ const siteConfig: SiteConfig = {
   },
   authorImage: '/avatar.svg',
   blogImageOverlay: true,
+  defaultColorMode: 'system',
   articleFeatures: {
     toc: {
       enabled: true,
