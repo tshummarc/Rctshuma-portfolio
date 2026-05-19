@@ -2,6 +2,7 @@
 import type { HTMLAttributes } from 'astro/types';
 import { cn } from '@/lib/cn';
 import { heroSectionVariants } from './hero.variants';
+import LightBar from '@/components/patterns/LightBar.astro';
 
 interface Props extends HTMLAttributes<'section'> {
   /** Layout mode: centered single column or split two-column */
@@ -16,6 +17,8 @@ interface Props extends HTMLAttributes<'section'> {
   showBlob?: boolean;
   /** Blob position (only applies when showBlob is true) */
   blobPosition?: 'left' | 'right' | 'center';
+  /** Show animated light-bar shaft (dark mode only) — pairs best on a plain dark hero. */
+  showLightBar?: boolean;
   /** Fade the bottom of the section into the next section's background */
   bottomFade?: boolean;
   /** Show an animated scroll indicator at the bottom (desktop only, hides on scroll) */
@@ -29,6 +32,7 @@ const {
   showBlob = false,
   blobPosition: _blobPosition = 'center',
   showGlow = false,
+  showLightBar = false,
   bottomFade = false,
   showScrollIndicator = false,
   class: className,
@@ -74,6 +78,8 @@ const gridClasses = cn(
       <div class="pointer-events-none absolute bottom-1/4 right-1/4 h-[400px] w-[400px] rounded-full bg-brand-600/10 blur-[100px] hidden dark:block" aria-hidden="true" />
     </>
   )}
+
+  {showLightBar && <LightBar />}
 
   {showBlob && (
     <>

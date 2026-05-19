@@ -1,0 +1,45 @@
+---
+/**
+ * Light Bar demo — temporary preview route for the stunning-ui port.
+ * URL: /light-bar
+ *
+ * Best viewed in dark mode. The shaft reads from --color-brand-*, so flipping
+ * the theme switcher recolors it live.
+ */
+import PageLayout from '@/layouts/PageLayout.astro';
+import { Hero } from '@/components/hero';
+import Badge from '@/components/ui/data-display/Badge/Badge.astro';
+import Button from '@/components/ui/form/Button/Button.astro';
+import Icon from '@/components/ui/primitives/Icon/Icon.astro';
+---
+
+<PageLayout
+  title="Light Bar — Astro Rocket"
+  description="Preview of the Light Bar hero effect, ported from stunning-ui."
+>
+  <Hero layout="centered" size="xl" showLightBar>
+    <Badge slot="badge" variant="brand" pill>New effect</Badge>
+
+    <h1
+      slot="title"
+      class="bg-gradient-to-br from-foreground via-foreground to-brand-500/60 bg-clip-text [-webkit-text-fill-color:transparent]"
+    >
+      A better way<br />to launch a hero
+    </h1>
+
+    <p slot="description">
+      The Light Bar is a dark-mode background effect that reads from your active
+      theme. Switch themes from the toggle and watch the shaft recolor live.
+    </p>
+
+    <Fragment slot="actions">
+      <Button size="lg" href="/">
+        Back home
+        <Icon name="arrow-right" size="sm" />
+      </Button>
+      <Button size="lg" variant="outline" href="/about">
+        See another hero
+      </Button>
+    </Fragment>
+  </Hero>
+</PageLayout>

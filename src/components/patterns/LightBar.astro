@@ -1,0 +1,67 @@
+---
+/**
+ * LightBar — dark-mode-only background effect for hero sections.
+ *
+ * Ported from stunning-ui (MIT, @xiaoluoboding) — original Vue source:
+ * https://www.stunningui.com/components/light-bar
+ *
+ * Reads --color-brand-500 / --color-brand-400 (Astro Rocket theme tokens),
+ * so it recolors automatically when the theme switcher flips data-theme.
+ * Renders as an absolutely-positioned backdrop; the parent must be relative.
+ */
+interface Props {
+  /** Vertical scale; bumps the shaft height. Default mirrors the original. */
+  scale?: number;
+}
+
+const { scale = 1.25 } = Astro.props;
+---
+
+<div
+  class="pointer-events-none absolute inset-0 -z-10 hidden overflow-hidden bg-background dark:block"
+  aria-hidden="true"
+>
+  <div
+    class="relative isolate flex h-full w-full items-center justify-center"
+    style={`transform: scaleY(${scale});`}
+  >
+    {/* Left conic gradient — fades brand color into the surface */}
+    <div
+      class="absolute inset-auto right-1/2 h-56 w-[30rem]"
+      style="background-image: conic-gradient(from 70deg at center top, var(--color-brand-500), var(--color-background), transparent);"
+    />
+
+    {/* Right conic gradient — mirror image */}
+    <div
+      class="absolute inset-auto left-1/2 h-56 w-[30rem]"
+      style="background-image: conic-gradient(from 290deg at center top, transparent, var(--color-background), var(--color-brand-500));"
+    />
+
+    {/* Soft horizontal mask below the shaft, blends the cones into the surface */}
+    <div class="absolute top-1/2 h-48 w-full translate-y-12 scale-x-150 bg-background blur-2xl" />
+
+    {/* Faint backdrop blur to soften everything underneath */}
+    <div class="absolute top-1/2 z-50 h-48 w-full bg-transparent opacity-10 backdrop-blur-md" />
+
+    {/* Wide top glow — the diffuse light source */}
+    <div
+      class="absolute inset-auto z-50 h-36 w-[28rem] -translate-y-1/2 rounded-full opacity-50 blur-3xl"
+      style="background-color: var(--color-brand-500);"
+    />
+
+    {/* Concentrated lower glow — the bright core */}
+    <div
+      class="absolute inset-auto z-30 h-36 w-64 -translate-y-[6rem] rounded-full blur-2xl"
+      style="background-color: var(--color-brand-400);"
+    />
+
+    {/* Bright horizon line — the sharp edge of the shaft */}
+    <div
+      class="absolute inset-auto z-50 h-0.5 w-[30rem] -translate-y-[7rem] blur-sm"
+      style="background-color: var(--color-brand-400);"
+    />
+
+    {/* Top mask — hides the gradient origin so the cones look like a beam */}
+    <div class="absolute inset-auto z-40 h-44 w-full -translate-y-[12.5rem] bg-background" />
+  </div>
+</div>
