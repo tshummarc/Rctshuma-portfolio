@@ -1,14 +1,14 @@
 ---
 title: "Dimension"
-description: "My personal site and a live showcase of Astro Rocket — running the Indigo theme, with view transitions, reveal animations, LetterGlitch CTAs, and an MDX-driven blog and project log. The first place every new pattern lands before it makes its way into the framework."
+description: "Dimension is a modern IT services and technology solutions website developed using Astro and Tailwind CSS. The project was designed to showcase IT design, management, and technical support services through a clean, professional, and performance-focused interface. The platform emphasizes responsive design, scalable frontend architecture, modern UI/UX principles, and optimized web performance to create a reliable digital presence for a technology-driven business."
 url: "https://dimensionit.com"
-tags: ["Astro", "TypeScript", "Tailwind CSS", "Personal Site"]
+tags: ["Astro", "TypeScript", "Tailwind CSS", "Client Work"]
 featured: true
 order: 1
 year: 2026
 role: "Designer & Developer"
 services: ["Web Design", "Web Development", "Performance"]
-meta: ["Personal site", "Built on Astro Rocket", "Astro 6", "Lighthouse 4×100"]
+meta: ["Client Work", "Built on Astro Rocket", "Astro 6", "Lighthouse 4×100"]
 image: "../../assets/projects/hansmartensdev-website.jpg"
 imageAlt: "Hans Martens Dev website"
 gallery:
@@ -29,60 +29,59 @@ import Callout from '@/components/patterns/Callout.astro';
 import { Image } from 'astro:assets';
 import letterGlitchScreenshot from '../../assets/projects/hansmartens-project.jpeg';
 
-## A site that's mine, not a template
+## About the project
 
-This is my home on the web — where my work, my writing, and the way I think about the craft live together. I designed and built it side by side with [Astro Rocket](/projects/astro-rocket), the open-source Astro 6 starter I released on the same day.
+Dimension is a professional IT services and technology solutions platform developed as a modern full-stack web project using Astro and Tailwind CSS. The website was created to represent a technology-focused company offering IT design, infrastructure management, technical support services, and digital business solutions through a modern, scalable, and performance-optimized web experience.
 
-Same starting line, different finish. Astro Rocket is the clean, opinionated theme anyone can clone. This site is what happens after the clone — a place that keeps growing, picks up its own personality, and carries the ideas that wouldn't make sense in a generic starter.
+The primary objective of the project was to build a professional corporate technology website capable of presenting complex IT services in a simple, visually engaging, and user-friendly way. The platform was designed to establish trust, communicate technical expertise, and provide businesses with a clear overview of the company’s services, support solutions, and operational capabilities.
 
-<Callout>
-  Astro Rocket is the theme. This is the home it lives in.
-</Callout>
+The project development process began with research into modern IT company websites, managed service provider platforms, enterprise technology branding, and digital service presentation strategies. The research focused on understanding how leading technology companies structure service pages, communicate technical solutions, and create intuitive user experiences while maintaining a professional corporate identity.
 
-## Everything Astro Rocket ships, tuned for me
+During the planning phase, the website architecture, navigation flow, content hierarchy, and responsive layout strategy were carefully designed to ensure the platform would be scalable, easy to navigate, and optimized for both desktop and mobile users. The goal was to create a clean and modern interface that balances technical professionalism with accessibility and usability.
 
-Because this site is built on Astro Rocket, it inherits the whole feature set: the full design system, 57+ components, the 3-state colour-mode picker, native opt-in i18n, the complete SEO stack with JSON-LD and `hreflang`, Pagefind search, the Resend-powered contact and newsletter forms, Google Consent Mode v2, an auto-generated table of contents on long blog posts, Giscus discussions, independently configured header and footer menus, and a layered animation system that respects reduced motion. Everything is there. I just made different decisions about what to keep visible.
+Astro was selected as the primary framework because of its modern static rendering capabilities, exceptional page performance, and lightweight architecture. Astro’s island architecture allowed the project to maintain fast loading speeds while supporting interactive UI components where necessary. Tailwind CSS was used to build a fully responsive and consistent design system while enabling rapid frontend development through reusable utility classes and component-based styling.
 
-## One brand, one colour
+The website was developed using reusable Astro components to create a scalable and maintainable frontend architecture. The modular development approach improved code organization and simplified future expansion as new services, pages, or integrations are added to the platform.
 
-Astro Rocket exposes twelve live-switchable colour themes from a pill in the header. On this site, that pill is off. Indigo is the brand, and the surface should reinforce that — not invite visitors to talk me out of it. The theme system underneath is still doing its job; I just locked the dial.
+Core sections developed throughout the project included:
 
-## Lighthouse: 100 across the board
+### IT service overview pages
+### Technology solution showcases
+### Managed support service sections
+### Company information pages
+### Contact and consultation sections
+### Service feature cards
+### Technical support information
+### Responsive navigation systems
+### Mobile-first layouts
+### Client engagement call-to-action sections
+### Footer navigation and corporate information
 
-<div class="my-10">
-  <LighthouseScoresGrid staggered={false} />
-</div>
+The user interface was designed to reflect a modern technology brand identity through clean layouts, structured spacing, modern typography, and subtle visual effects. The project focused heavily on usability and readability to ensure technical information could be presented clearly without overwhelming users.
 
-This site scores **100 on every Lighthouse category — on both desktop and mobile** — Performance, Accessibility, Best Practices, and SEO. Every new feature is weighed against its Lighthouse cost before it ships; the mobile LetterGlitch was on the table for a while, and the 2-point Performance hit it would have cost is exactly why I left it off. For what each score actually measures, see [What the Lighthouse Score Actually Means](https://hansmartens.dev/blog/lighthouse-score-explained).
+A mobile-first responsive design strategy was implemented to ensure the website functions consistently across desktops, tablets, and smartphones. Tailwind CSS responsive utilities were extensively used to optimize layouts, spacing, typography, and content scaling across multiple screen sizes and devices.
 
-## One hero, both modes
+Performance optimization was a major priority throughout development. Astro’s optimized rendering system significantly reduced unnecessary JavaScript, resulting in faster page loads and improved SEO performance. Additional optimization strategies included:
 
-The homepage hero is built around a single vertical gradient — brand-indigo at the top, fading to pure black at the bottom — and it renders **identically in light and dark mode**. The hero is the moment the brand has to land, and locking it to a fixed brand-to-black ramp means the headline reads with the same drama regardless of which mode the visitor's OS prefers. The headline sits in a slightly dimmed, brand-tinted near-white so it never competes with the gradient, and the floating header rests on top as a frosted capsule. Every inner page — blog, projects, about, contact — drops the decoration entirely and lets the content speak.
+### Lightweight component rendering
+### Optimized image handling
+### Semantic HTML structure
+### Responsive asset loading
+### Clean and maintainable code organization
+### Efficient Tailwind CSS utility management
+### Accessibility-focused frontend practices
 
-## The desktop CTA you keep scrolling back to
+The project was also built with search engine optimization and accessibility best practices in mind. Proper semantic structure, optimized metadata, structured content hierarchy, and responsive performance improvements were implemented to improve discoverability and usability across different platforms and search engines.
 
-<Image src={letterGlitchScreenshot} alt="The homepage LetterGlitch CTA: brand-indigo letters cycling on a near-black canvas behind a tinted glass card with the headline 'Have a project in mind?' and two action buttons." widths={[640, 960, 1280]} sizes="(max-width: 768px) 100vw, 800px" />
+Version control and project management were handled using Git throughout the development lifecycle, allowing efficient collaboration, feature tracking, and deployment management. After development and testing, the project was deployed using Netlify to provide fast global content delivery, automated build workflows, and reliable production hosting.
 
-The closing call-to-action on the homepage, about page, projects index, and every blog post finishes with the same composition: a contained band with the **LetterGlitch** canvas cycling brand-indigo letters behind a near-opaque glass card. It's deliberately desktop-only — on mobile the band would compress badly, so phones get a quieter brand-tinted glass card instead. The full build is written up in [Add a LetterGlitch effect to your Astro 6 site](/blog/letter-glitch-astro-6).
+The deployment workflow included:
 
-## Small details that compound
+### Production optimization
+### Continuous deployment integration
+### Git repository deployment automation
+### Performance testing
+### Responsive testing across devices
+### Final production configuration
 
-- **The cursor leaves a trail.** A brand-indigo dot sits exactly under the pointer, a lagging ring chases it with elastic ease and blooms over anything clickable, and a comet of fading particles spawns behind every flick of the mouse. Desktop and fine-pointer only — the moment a visitor sets `prefers-reduced-motion`, the whole layer vanishes without a trace.
-
-- **Cards lift, they don't jump.** Every project card, blog card, and about-me tile rises 1px on hover, picks up a softer shadow, and fades in a brand-coloured top-border accent. Small enough that you feel it before you see it — which is the only way a grid should respond.
-
-- **The header flips when you come back.** Scroll down and the floating capsule slides up out of sight; scroll back and it returns with its colour scheme inverted to read cleanly against whatever section is now sitting underneath. One 300ms animation does it — menu items, theme pill, and hamburger all ease through together.
-
-- **Scroll progress lives on a ring.** A thin arc traces clockwise around the back-to-top button as you read, filling from empty at the top to a full circle at the bottom. Theme-aware, `requestAnimationFrame`-throttled, never the centre of attention.
-
-- **Things arrive, they don't stop.** Every entrance uses a cubic-bezier with a controlled overshoot, so elements travel a few pixels past their mark and snap back. A physics spring, no runtime library. Reduced motion turns the whole layer off cleanly — no awkward fallback frame.
-
-- **The headline types itself without shifting.** The hero word cycles through phrases, but the line width is locked to the longest one before the animation starts — measured from an off-screen clone that inherits the exact computed font metrics. Most typing effects shift their surroundings every cycle; this one doesn't. It's the Core Web Vitals detail almost everyone gets wrong.
-
-- **No flash, ever.** A small synchronous script in `<head>` reads the saved colour mode and applies the right `.dark` class before the body paints, so dark-mode visitors never catch a frame of white — across reloads, new tabs, and every internal navigation. The kind of detail no one notices when it works, which is exactly the point.
-
-- **System, Light, Dark — a real three-state switch.** The colour-mode pill isn't a binary toggle. You can pin Light or Dark, or pick System and let the OS drive — and when System is active, the page flips live the moment macOS or Windows does, no reload. The icon in the pill always shows what you picked, not what's currently rendered.
-
-## What lands here first
-
-Astro Rocket is published, listed on the [official Astro themes directory](https://astro.build/themes/details/astro-rocket/), and stable. From here on, the new work — features, experiments, writing — lands on this site first. Some of it gets folded back into the starter. Some of it stays here because it only makes sense in context. Either way, this is where the next thing shows up.
+Dimension demonstrates the ability to design and develop modern corporate technology websites using Astro and Tailwind CSS while applying scalable frontend architecture, responsive web development, SEO optimization, component-driven design systems, and modern deployment workflows. The project highlights practical skills in full-stack development, UI/UX implementation, responsive frontend engineering, performance optimization, and building professional business-focused digital platforms for the IT industry.
